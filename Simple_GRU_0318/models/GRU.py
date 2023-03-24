@@ -36,26 +36,29 @@ class Utterance_net(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, args):
         super(Utterance_net, self).__init__()
         self.hidden_dim = args.hidden_layer
-        self.num_layers = args.dia_layers
+        self.layer2 = nn.Sequential(nn.Linear(input_size, output_size), nn.ReLU(True)))
 
-        self.bilstm = nn.LSTM(input_size, self.hidden_dim, num_layers =self.num_layers,
-                              dropout=args.dropout, batch_first=True, bidirectional=True, bias=False)
+    def forward(self, x):
+        x = self.layer2(x)
+        return x
+ '''
 
-        self.hidden2label1 = nn.Linear(self.hidden_dim*2, self.hidden_dim // 2)
-        self.hidden2label2 = nn.Linear(self.hidden_dim // 2, output_size)
-        self.dropout = nn.Dropout(args.dropout)
+'''
 
-    def forward(self, input):
-        embed = self.dropout(input)
-        bilstm_out, _ = self.bilstm(embed)
-        #bilstm_out = torch.transpose(bilstm_out, 0, 1)
-        bilstm_out = torch.transpose(bilstm_out, 1, 2)
-        bilstm_out = F.tanh(bilstm_out)
-        bilstm_out = F.max_pool1d(bilstm_out, bilstm_out.size(2)).squeeze(2)
-        y = self.hidden2label1(bilstm_out)
-        y = self.hidden2label2(y)
-        return y
- '''   
+class Utterance_net(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size, args):
+        super(Utterance_net, self).__init__()
+        self.hidden_dim = args.hidden_layer
+        self.layer1 = nn.Sequential(nn.Linear(input_size, hidden_size// 4)), nn.ReLU(True))
+        self.layer2 = nn.Sequential(nn.Linear(hidden_size// 4, output_size))
+
+
+    def forward(self, x):
+        x = self.layer1(x)
+        x = self.layer2(x)
+        return x
+ '''
+
 class Utterance_net_attention(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, args):
         super(Utterance_net_attention, self).__init__()
